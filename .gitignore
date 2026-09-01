@@ -1,0 +1,19 @@
+# colcon build artifacts
+/build/
+/install/
+/log/
+
+# credentials / local notes -- never commit
+tk.md
+*.pat
+*.token
+
+# python
+__pycache__/
+*.py[cod]
+
+# editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store

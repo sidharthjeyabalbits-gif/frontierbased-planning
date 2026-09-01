@@ -1,0 +1,49 @@
+explore_node:
+  ros__parameters:
+    use_sim_time: true
+
+    robot_base_frame: base_footprint
+
+    # Explore off the raw slam_toolbox occupancy grid.
+    #
+    # This build of explore_lite quits permanently the first time its frontier
+    # search returns an empty list. The Nav2 global costmap briefly has no
+    # unknown-adjacent free cells during its periodic rebuilds, which trips
+    # that -- so we use /map instead: it grows monotonically and always has
+    # genuine free<->unknown borders until exploration is really done.
+    #
+    # /map's own failure mode -- a robot centered in a closed room sees a
+    # symmetric frontier ring whose centroid is ~its own pose, so every goal
+    # lands inside Nav2's goal tolerance and it never moves -- is handled by
+    # initial_spin.py (one 360 deg turn) running before explore_lite starts.
+    costmap_topic: /map
+    costmap_updates_topic: /map_updates
+    visualize: true
+
+    # how often to (re)pick a frontier and send a Nav2 goal
+    planner_frequency: 0.33
+    # give up on a frontier goal if no progress for this long (s).
+    # bumped for turtlebot3_house: legs between rooms are long.
+    progress_timeout: 45.0
+
+    # frontier scoring:  cost = potential_scale*dist  -  gain_scale*size
+    #   raise potential_scale  -> greedy, go to nearest frontier
+    #   raise gain_scale       -> go where the most unknown space is
+    potential_scale: 3.0
+    orientation_scale: 0.0
+    gain_scale: 1.0
+
+    transform_tolerance: 0.5
+    # ignore frontiers smaller than this (m). 0.75 rejects slivers between
+    # furniture without discarding real openings (~0.8 m doors).
+    min_frontier_size: 0.75
+
+    # ignore any frontier whose centroid is closer than this (m) to the robot.
+    # Without it, once a room is mostly mapped explore_lite keeps picking a
+    # frontier centroid ~0 m away, Nav2 reports the goal "reached" without
+    # moving, the map never changes, and the robot is stuck resending a null
+    # goal (this is a local patch to explore_lite -- see src/m-explore-ros2).
+    min_goal_distance: 0.5
+
+    # drive back to the start pose once no frontiers remain
+    return_to_init: true
