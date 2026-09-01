@@ -1,0 +1,5 @@
+# The m-explore-ros2 tree is third-party code (robo-friends/m-explore-ros2),
+# vendored only because it has no ROS 2 Humble release. Exclude it from
+# GitHub's language stats and contributor/blame views so they reflect this
+# project's own code (frontier_explorer).
+src/m-explore-ros2/** linguist-vendored
